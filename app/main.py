@@ -239,3 +239,43 @@ async def health_check():
 #     import uvicorn
 #     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
 # Comentado pois Gunicorn/Render usará o comando no Procfile
+
+import os
+import httpx
+from app.config import settings
+
+async def call_openrouter(messages: list[dict]) -> str:
+    """
+    Envia mensagens para a IA da OpenRouter com base no histórico e no prompt.
+    """
+    try:
+        prompt_path = os.path.join(os.path.dirname(__file__), "../prompt/system_prompt.txt")
+        with open(prompt_path, "r", encoding="utf-8") as f:
+            system_prompt = f.read().strip()
+
+        chat_messages = [{"role": "system", "content": system_prompt}] + [
+            {"role": m.role, "content": m.content} for m in messages
+        ]
+
+        headers = {
+            "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
+            "HTTP-Referer": "https://draana.whatsapp",
+            "Content-Type": "application/json"
+        }
+
+        body = {
+            "model": "google/gemini-2.0-flash-001",
+            "messages": chat_messages,
+            "temperature": 0.7,
+            "max_tokens": 1000
+        }
+
+        async with httpx.AsyncClient(timeout=30) as client:
+            response = await client.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=body)
+            response.raise_for_status()
+            data = response.json()
+            return data["choices"][0]["message"]["content"].strip()
+
+    except Exception as e:
+        settings.logger.error(f"Erro ao chamar OpenRouter: {e}", exc_info=True)
+        return None
