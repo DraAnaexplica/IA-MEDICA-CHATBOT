@@ -1,0 +1,41 @@
+# --- Arquivo de Segredos ---
+# IGNORAR ARQUIVO DE VARIÁVEIS DE AMBIENTE! Contém chaves de API e senhas.
+.env*
+
+# --- Python ---
+# Arquivos de bytecode compilado/otimizado
+__pycache__/
+*.py[cod]
+
+# --- Ambientes Virtuais ---
+# Pastas comuns de ambientes virtuais (venv, .venv, env)
+venv/
+.venv/
+env/
+ENV/
+*/env/
+*/venv/
+*/.venv/
+
+# --- Logs ---
+# Arquivos de log
+*.log
+logs/
+
+# --- IDEs / Editores ---
+# VS Code
+.vscode/
+# PyCharm
+.idea/
+# Vim/Emacs (arquivos temporários/swap)
+*~
+*.sw[op]
+*#
+.#*
+
+# --- Sistema Operacional ---
+# Mac OS
+.DS_Store
+# Windows
+Thumbs.db
+Desktop.ini
